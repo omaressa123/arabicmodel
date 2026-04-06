@@ -1,0 +1,5 @@
+openai-whisper
+python-pptx
+requests
+flask
+torch

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arabic Voice-to-Presentation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='mic.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>🎤 منشئ العروض التقديمية الصوتي</h1>
+            <p>سجل موضوعك وسنقوم بإنشاء العرض التقديمي لك</p>
+        </header>
+
+        <main>
+            <div class="recorder-section">
+                <div class="mic-wrapper">
+                    <button id="mic-btn" class="mic-btn">
+                        <span class="icon">🎙️</span>
+                    </button>
+                    <div class="pulse-ring"></div>
+                </div>
+                <div id="status" class="status">جاهز للتسجيل...</div>
+            </div>
+
+            <div id="results" class="results-section hidden">
+                <div class="loader-container">
+                    <div class="loader"></div>
+                    <p id="processing-step">جاري معالجة الصوت...</p>
+                </div>
+                <div id="download-container" class="download-container hidden">
+                    <h3>✅ اكتمل العرض التقديمي!</h3>
+                    <a id="download-link" href="#" class="btn-download">تحميل العرض (PPTX)</a>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 ArabicModel System</p>
+            <p>created by omar essa</p>
+        </footer>
+    </div>
+    <script src="{{ url_for('static', filename='mic.js') }}"></script>
+</body>
+</html>

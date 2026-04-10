@@ -1,6 +1,12 @@
 import os
 import json
 import requests
+import sys
+
+# Ensure UTF-8 output for Arabic characters
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout.reconfigure(encoding='utf-8')
+
 from arabicmodel.speech_to_text import ArabicSpeechToText
 from arabicmodel.text_cleaning import preprocess_text
 from arabicmodel.slide_generator import SlideGenerator

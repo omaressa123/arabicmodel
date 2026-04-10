@@ -1,6 +1,12 @@
-from flask import Flask, render_template, request, jsonify, send_from_directory
+from flask import Flask, render_template, request, jsonify, send_from_directory, redirect, url_for
 import os
 import uuid
+import sys
+
+# Ensure UTF-8 output for Arabic characters
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout.reconfigure(encoding='utf-8')
+
 from main import ArabicPresentationGenerator
 from arabicmodel.config import DATA_DIR, OUTPUT_DIR
 
@@ -16,8 +22,11 @@ generator = ArabicPresentationGenerator()
 def index():
     return render_template('mic.html')
 
-@app.route('/upload', methods=['POST'])
+@app.route('/upload', methods=['GET', 'POST'])
 def upload_audio():
+    if request.method == 'GET':
+        return redirect(url_for('index'))
+    
     if 'audio' not in request.files:
         return jsonify({"error": "No audio file provided"}), 400
     

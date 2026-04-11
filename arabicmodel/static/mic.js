@@ -54,8 +54,13 @@ async function uploadAudio(blob) {
     try {
         const response = await fetch('/upload', {
             method: 'POST',
-            body: formData
+            body: formData,
+            mode: 'cors'
         });
+
+        if (!response.ok) {
+            throw new Error(`Server returned status: ${response.status}`);
+        }
 
         const data = await response.json();
 
@@ -70,8 +75,8 @@ async function uploadAudio(blob) {
             processingStep.innerText = "حدث خطأ: " + (data.error || "فشل غير معروف");
         }
     } catch (err) {
-        console.error("Error uploading audio:", err);
+        console.error("Detailed error:", err);
         status.innerText = "خطأ في الاتصال بالخادم";
-        processingStep.innerText = "تعذر الاتصال بالخادم";
+        processingStep.innerText = "تعذر الاتصال بالخادم: " + err.message;
     }
 }

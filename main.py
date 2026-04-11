@@ -43,23 +43,33 @@ class ArabicPresentationGenerator:
         }
         
         try:
-            response = requests.post(OLLAMA_API_URL, json=payload)
+            print(f"Sending prompt to Ollama ({OLLAMA_API_URL})...")
+            response = requests.post(OLLAMA_API_URL, json=payload, timeout=60)
             response.raise_for_status()
             response_json = response.json()
             
             # Extract and parse JSON from the LLM output
             llm_text = response_json.get('response', '').strip()
+            print(f"Raw LLM Response: {llm_text}")
             
             # Simple way to find JSON in case the LLM adds extra text
             start = llm_text.find('[')
             end = llm_text.rfind(']') + 1
             if start != -1 and end != -1:
                 json_str = llm_text[start:end]
-                return json.loads(json_str)
+                try:
+                    return json.loads(json_str)
+                except json.JSONDecodeError as je:
+                    print(f"Failed to parse JSON segment: {je}")
+                    print(f"Segment was: {json_str}")
+                    return None
             else:
-                print("Could not find valid JSON in LLM response.")
+                print("Could not find valid JSON (missing brackets) in LLM response.")
                 return None
                 
+        except requests.exceptions.ConnectionError:
+            print("Error: Could not connect to Ollama. Is it running?")
+            return None
         except Exception as e:
             print(f"Error communicating with Ollama: {e}")
             return None

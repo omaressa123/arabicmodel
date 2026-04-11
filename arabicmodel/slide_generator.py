@@ -34,19 +34,38 @@ class SlideGenerator:
 
     def create_presentation(self, slides_data, output_filename="presentation.pptx"):
         """Creates the full presentation from a list of slide data dictionaries."""
-        if not slides_data:
+        if not slides_data or not isinstance(slides_data, list):
+            print("Error: slides_data is empty or not a list.")
             return None
         
-        # Add title slide if it's the first one or specifically marked
-        for i, slide in enumerate(slides_data):
-            if i == 0 or slide.get('type') == 'title':
-                self.add_title_slide(slide.get('title', 'Presentation'), slide.get('subtitle', ''))
-            else:
-                self.add_content_slide(slide.get('title', 'Slide'), slide.get('content', []))
-        
-        output_path = os.path.join(OUTPUT_DIR, output_filename)
-        self.prs.save(output_path)
-        return output_path
+        try:
+            # Re-initialize presentation for each call to avoid cumulative slides if reused
+            self.prs = Presentation()
+            
+            # Add title slide if it's the first one or specifically marked
+            for i, slide in enumerate(slides_data):
+                if not isinstance(slide, dict):
+                    print(f"Skipping invalid slide data at index {i}: {slide}")
+                    continue
+                    
+                title = slide.get('title', 'Slide')
+                
+                if i == 0 or slide.get('type') == 'title':
+                    subtitle = slide.get('subtitle', '')
+                    self.add_title_slide(title, subtitle)
+                else:
+                    content = slide.get('content', [])
+                    if isinstance(content, str): # Handle if LLM returns a single string instead of list
+                        content = [content]
+                    self.add_content_slide(title, content)
+            
+            os.makedirs(OUTPUT_DIR, exist_ok=True)
+            output_path = os.path.join(OUTPUT_DIR, output_filename)
+            self.prs.save(output_path)
+            return output_path
+        except Exception as e:
+            print(f"Error creating PowerPoint: {e}")
+            return None
 
 # Example Usage
 if __name__ == '__main__':

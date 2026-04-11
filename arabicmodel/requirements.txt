@@ -1,5 +1,6 @@
+flask
+flask-cors
 openai-whisper
 python-pptx
 requests
-flask
 torch

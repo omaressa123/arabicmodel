@@ -1,5 +1,6 @@
 # config.py
 import os
+import torch
 
 # Project Base Directory
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -11,7 +12,9 @@ WHISPER_MODEL_NAME = 'base' # 'base', 'small', 'medium', 'large'
 WHISPER_SETTINGS = {
     'language': 'ar',
     'model_size': WHISPER_MODEL_NAME,
-    'task': 'transcribe'
+    'task': 'transcribe',
+    'fp16': torch.cuda.is_available(),  # Use FP16 only if CUDA is available
+    'device': 'cuda' if torch.cuda.is_available() else 'cpu'
 }
 
 # Ollama Settings

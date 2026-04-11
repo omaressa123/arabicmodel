@@ -6,7 +6,7 @@ from .config import WHISPER_SETTINGS
 class ArabicSpeechToText:
     def __init__(self, model_size=WHISPER_SETTINGS['model_size']):  
         self._check_ffmpeg()
-        self.model = whisper.load_model(model_size)
+        self.model = whisper.load_model(model_size, device=WHISPER_SETTINGS['device'])
 
     def _check_ffmpeg(self):
         """Check if ffmpeg is installed and available in the PATH."""
@@ -22,7 +22,13 @@ class ArabicSpeechToText:
             raise FileNotFoundError(f"Audio file not found at: {audio_path}")
         
         try:
-            result = self.model.transcribe(audio_path, language=WHISPER_SETTINGS['language'])
+            result = self.model.transcribe(
+                audio_path, 
+                language=WHISPER_SETTINGS['language'], 
+                task=WHISPER_SETTINGS['task'],
+                fp16=WHISPER_SETTINGS['fp16'],
+                verbose=False
+            )
             return result['text']
         except Exception as e:
             if "ffmpeg" in str(e).lower() or "[WinError 2]" in str(e):

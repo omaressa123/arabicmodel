@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify, send_from_directory, redirect, url_for
+from flask_cors import CORS
 import os
 import uuid
 import sys
@@ -11,6 +12,8 @@ from main import ArabicPresentationGenerator
 from arabicmodel.config import DATA_DIR, OUTPUT_DIR
 
 app = Flask(__name__, static_folder='arabicmodel/static', template_folder='arabicmodel/static')
+CORS(app) # Enable CORS for all routes
+app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024 # Limit upload size to 100MB
 
 # Ensure directories exist
 os.makedirs(DATA_DIR, exist_ok=True)
@@ -56,12 +59,16 @@ def upload_audio():
             return jsonify({"success": False, "error": "Failed to generate presentation"}), 500
             
     except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
         print(f"Error during processing: {e}")
-        return jsonify({"success": False, "error": str(e)}), 500
+        print(f"Full Traceback: {error_details}")
+        return jsonify({"success": False, "error": str(e), "details": "Check server logs for full traceback"}), 500
 
 @app.route('/download/<filename>')
 def download_file(filename):
     return send_from_directory(OUTPUT_DIR, filename, as_attachment=True)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    # Disable reloader to prevent unexpected restarts during long processing tasks (like Whisper)
+    app.run(debug=True, use_reloader=False, port=5000)
